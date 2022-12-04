@@ -2,8 +2,6 @@
 
 namespace common\models;
 
-use Yii;
-
 /**
  * This is the model class for table "data".
  *
@@ -13,8 +11,9 @@ use Yii;
  * @property string|null $type
  * @property string|null $value
  * @property int $request_id
+ * @property int $nesting_level
  *
- * @property Data[] $datas
+ * @property Data[] $children
  * @property Data $parent
  * @property Request $request
  */
@@ -34,7 +33,7 @@ class Data extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['parent_id', 'request_id'], 'integer'],
+            [['parent_id', 'request_id', 'nesting_level'], 'integer'],
             [['value'], 'string'],
             [['request_id'], 'required'],
             [['key', 'type'], 'string', 'max' => 255],
@@ -63,7 +62,7 @@ class Data extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getDatas()
+    public function getChildren()
     {
         return $this->hasMany(Data::class, ['parent_id' => 'id']);
     }

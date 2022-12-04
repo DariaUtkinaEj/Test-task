@@ -81,14 +81,15 @@ class SiteController extends Controller
 
     }
 
-    private function loadParamToDB($requestId, $key, $param, $parentId = null)
+    private function loadParamToDB($requestId, $key, $param, $parentId = null, $nestingLevel = 0)
     {
         $data = new Data([
             'request_id' => $requestId,
             'parent_id' => $parentId,
             'key' => (string)$key,
             'value' => is_array($param) ? 'array' : $param,
-            'type' => gettype($param)
+            'type' => gettype($param),
+            'nesting_level' => $nestingLevel
         ]);
 
         if (!$data->save()) {
@@ -97,8 +98,10 @@ class SiteController extends Controller
 
         if (!is_array($param)) return;
 
+        $nestingLevel++;
+
         foreach ($param as $key => $item) {
-            $this->loadParamToDB($requestId, $key, $item, $data->id);
+            $this->loadParamToDB($requestId, $key, $item, $data->id, $nestingLevel);
         }
     }
 }

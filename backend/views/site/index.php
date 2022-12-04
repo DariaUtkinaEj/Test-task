@@ -1,53 +1,45 @@
 <?php
 
-/** @var yii\web\View $this */
+use common\models\Request;
 
-$this->title = 'My Yii Application';
+/** @var yii\web\View $this */
+/** @var Request[] $requests */
+
+$this->title = 'Test task backend module';
 ?>
 <div class="site-index">
-
     <div class="jumbotron text-center bg-transparent">
-        <h1 class="display-4">Congratulations!</h1>
-
-        <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
+        <h1 class="display-4">Read, update, delete stored objects</h1>
     </div>
-
     <div class="body-content">
-
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
-            </div>
-        </div>
-
+        <?php foreach ($requests as $request): ?>
+            <p class="lead">
+                Request id: <?= $request->id ?>, time (sec) taken to handle it: <?= $request->time_usage ?>, memory usage (KB): <?= $request->memory_usage / 1024 ?>
+            </p>
+            <ul>
+                <?php foreach ($request->data as $dataElement): ?>
+                    <li style="margin-left: <?= 20 * $dataElement->nesting_level ?>px;"
+                        data-parent-id="<?= $dataElement->parent_id ?>"
+                        data-id="<?= $dataElement->id ?>"
+                        class="list-element"
+                        data-visibility="shown"
+                    >
+                        <?= $dataElement->key; ?> (<?= $dataElement->type ?>)
+                        <?php if (!count($dataElement->children)): ?>
+                        <input class="input-value" data-id="<?= $dataElement->id ?>" type="text" value="<?= $dataElement->value ?>">
+                        <?php endif; ?>
+                        <?php if (count($dataElement->children)): ?>
+                            <button class="list-element-toggler">Свернуть</button>
+                        <?php endif; ?>
+                        <button class="delete-button" data-id="<?= $dataElement->id ?>">Удалить</button>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <div style="border-bottom: 1px solid #000000;"></div>
+        <?php endforeach; ?>
     </div>
 </div>
+
+<style>
+
+</style>

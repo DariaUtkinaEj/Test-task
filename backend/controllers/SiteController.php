@@ -2,47 +2,17 @@
 
 namespace backend\controllers;
 
-use common\models\LoginForm;
+use common\models\Data;
+use common\models\Request;
 use Yii;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\web\Response;
+use yii\web\NotFoundHttpException;
 
 /**
  * Site controller
  */
 class SiteController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'rules' => [
-                    [
-                        'actions' => ['login', 'error'],
-                        'allow' => true,
-                    ],
-                    [
-                        'actions' => ['logout', 'index'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -55,50 +25,39 @@ class SiteController extends Controller
         ];
     }
 
-    /**
-     * Displays homepage.
-     *
-     * @return string
-     */
     public function actionIndex()
     {
-        return $this->render('index');
+        $requests = Request::find()->all();
+        return $this->render('index', ['requests' => $requests]);
     }
 
-    /**
-     * Login action.
-     *
-     * @return string|Response
-     */
-    public function actionLogin()
+    public function actionUpdate($id)
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+        $model = $this->findModel($id);
+
+        $value = Yii::$app->request->post('value');
+        $model->value = $value;
+
+        if ($model->save()) {
+            return true;
         }
 
-        $this->layout = 'blank';
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-
-        return $this->render('login', [
-            'model' => $model,
-        ]);
+        return false;
     }
 
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
-    public function actionLogout()
+    public function actionDelete($id)
     {
-        Yii::$app->user->logout();
+        $this->findModel($id)->delete();
 
-        return $this->goHome();
+        return true;
+    }
+
+    private function findModel($id)
+    {
+        if (($model = Data::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('Requested model does not exist.');
     }
 }

@@ -13,7 +13,7 @@ use yii\behaviors\TimestampBehavior;
  * @property int|null $created_at
  * @property int|null $updated_at
  *
- * @property Data[] $datas
+ * @property Data[] $data
  */
 class Request extends \yii\db\ActiveRecord
 {
@@ -61,7 +61,7 @@ class Request extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[Datas]].
+     * Gets query for [[Data]].
      *
      * @return \yii\db\ActiveQuery
      */
