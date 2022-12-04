@@ -8,6 +8,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Exception;
 use yii\web\IdentityInterface;
+use yii\web\UnauthorizedHttpException;
 
 /**
  * User model
@@ -89,6 +90,23 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findIdentityByAccessToken($token, $type = null)
     {
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+    }
+
+    /**
+     * {@inheritdoc}
+     * @throws UnauthorizedHttpException
+     */
+    public static function checkAuthToken($token)
+    {
+        $user = self::findOne(['auth_key' => $token]);
+
+        if (!$user) {
+            throw new UnauthorizedHttpException('No user found by auth key');
+        }
+
+        if ($user->auth_expires_at < time()) {
+            throw new UnauthorizedHttpException('Auth key is expired');
+        }
     }
 
     /**
