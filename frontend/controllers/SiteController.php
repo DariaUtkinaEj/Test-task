@@ -57,7 +57,6 @@ class SiteController extends Controller
     public function actionCreate()
     {
         $bodyParams = Yii::$app->request->getBodyParams();
-
         $requestModel = new Request([
             'time_usage' => 0,
             'memory_usage' => 0
@@ -87,7 +86,8 @@ class SiteController extends Controller
             'request_id' => $requestId,
             'parent_id' => $parentId,
             'key' => (string)$key,
-            'value' => is_array($param) ? 'array' : $param,
+            // `value` expects string, because we need to store strings, integers, float, long text — everything
+            'value' => is_array($param) ? 'array' : (string)$param,
             'type' => gettype($param),
             'nesting_level' => $nestingLevel
         ]);
