@@ -26,7 +26,7 @@ $this->title = 'Test task backend module';
                     >
                         <?= $dataElement->key; ?> (<?= $dataElement->type ?>)
                         <?php if (!count($dataElement->children)): ?>
-                        <input class="input-value" data-id="<?= $dataElement->id ?>" type="text" value="<?= $dataElement->value ?>">
+                            <input class="input-value" data-id="<?= $dataElement->id ?>" type="text" value="<?= $dataElement->value ?>">
                         <?php endif; ?>
                         <?php if (count($dataElement->children)): ?>
                             <button class="list-element-toggler">Свернуть</button>
@@ -39,7 +39,3 @@ $this->title = 'Test task backend module';
         <?php endforeach; ?>
     </div>
 </div>
-
-<style>
-
-</style>

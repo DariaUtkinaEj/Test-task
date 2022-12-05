@@ -215,12 +215,11 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Generates "remember me" authentication key
-     * @todo change expire time to 5 min
      */
     public function generateAuthKey()
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
-        $this->auth_expires_at = time() + 60 * 999999;
+        $this->auth_expires_at = time() + 60 * 5;
     }
 
     /**
