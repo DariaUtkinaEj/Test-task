@@ -2,11 +2,10 @@
 
 namespace frontend\controllers;
 
-use common\models\Data;
-use common\models\Request;
+use frontend\models\Data;
+use frontend\models\Request;
 use common\models\User;
 use Yii;
-use yii\db\Exception;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -57,19 +56,13 @@ class SiteController extends Controller
     public function actionCreate()
     {
         $bodyParams = Yii::$app->request->getBodyParams();
-        $requestModel = new Request([
-            'time_usage' => 0,
-            'memory_usage' => 0
-        ]);
-        $requestModel->save();
+        $requestModel = Request::getNewModel();
 
         foreach ($bodyParams as $key => $param) {
-            $this->loadParamToDB($requestModel->id, $key, $param);
+            Data::loadParamToDB($requestModel->id, $key, $param);
         }
 
-        $requestModel->time_usage = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
-        $requestModel->memory_usage = memory_get_usage();
-        $requestModel->save();
+        $requestModel->saveTimeAndMemoryUsage();
 
         return 'It took ' .
             (microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) .
@@ -77,31 +70,5 @@ class SiteController extends Controller
             "\n" .
             'It took ' . memory_get_usage() / 1024 .
             ' kilobytes of RAM to handle this request.';
-
-    }
-
-    private function loadParamToDB($requestId, $key, $param, $parentId = null, $nestingLevel = 0)
-    {
-        $data = new Data([
-            'request_id' => $requestId,
-            'parent_id' => $parentId,
-            'key' => (string)$key,
-            // `value` expects string, because we need to store strings, integers, float, long text — everything
-            'value' => is_array($param) ? 'array' : (string)$param,
-            'type' => gettype($param),
-            'nesting_level' => $nestingLevel
-        ]);
-
-        if (!$data->save()) {
-            throw new Exception('Unable to save data item', $data->getErrors());
-        }
-
-        if (!is_array($param)) return;
-
-        $nestingLevel++;
-
-        foreach ($param as $key => $item) {
-            $this->loadParamToDB($requestId, $key, $item, $data->id, $nestingLevel);
-        }
     }
 }

@@ -36,9 +36,9 @@ return [
                 ],
             ],
         ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
-        ],
+        //'errorHandler' => [
+        //    'errorAction' => 'site/error',
+        //],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,

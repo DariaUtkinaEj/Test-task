@@ -57,12 +57,19 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+            [['username', 'auth_key', 'password_hash', 'auth_expires_at'], 'required'],
+            [['status', 'created_at', 'updated_at', 'auth_expires_at'], 'integer'],
+            [['username', 'password_hash', 'password_reset_token', 'verification_token'], 'string', 'max' => 255],
+            [['auth_key'], 'string', 'max' => 32],
+            [['username'], 'unique'],
+            [['password_reset_token'], 'unique'],
         ];
     }
 
     /**
      * @param $username
      * @param $password
+     * @throws Exception
      */
     public static function createNewUser($username, $password): void
     {
@@ -73,7 +80,9 @@ class User extends ActiveRecord implements IdentityInterface
 
         $model->generateAuthKey();
         $model->setPassword($password);
-        $model->save();
+        if (!$model->save()) {
+            throw new Exception('Unable to create user due to validation fail', $model->errors);
+        }
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace console\controllers;
 
 use common\models\User;
+use frontend\models\Request;
 use yii\console\Controller;
 use yii\console\Exception;
 
